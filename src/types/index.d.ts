@@ -43,6 +43,55 @@ export interface RoomData {
     createdAt: Date;
 }
 
+// Socket.IO Response Types
+export interface SocketResponse<T = unknown> {
+    success: boolean;
+    error?: string;
+    data?: T;
+}
+
+export interface CreateRoomResponse extends SocketResponse {
+    roomId: string;
+    roomData: RoomData;
+    player: Player;
+}
+
+export interface JoinRoomResponse extends SocketResponse {
+    roomData: RoomData;
+    player: Player;
+}
+
+export interface GetGameStateResponse extends SocketResponse {
+    gameState: GameState;
+    roomData: RoomData;
+}
+
+export interface MakeMoveResponse extends SocketResponse {
+    gameState: GameState;
+}
+
+export interface ForceMoveResponse extends SocketResponse {
+    gameState: GameState;
+}
+
+export interface StartGameResponse extends SocketResponse {
+    gameState: GameState;
+}
+
+export interface PlayerJoinedData {
+    roomData: RoomData;
+}
+
+export interface PlayerDisconnectedData {
+    playerId: string;
+    roomData: RoomData;
+}
+
+export interface MoveMadeData {
+    gameState: GameState;
+}
+
+// Component Props
 export interface GameBoardSectionProps {
     board: (string | null)[];
     currentPlayer: string;
@@ -77,6 +126,7 @@ export interface JoinGameSectionProps {
     onCancelJoin: () => void;
 }
 
+// Hook State Types
 export interface GameSocketState {
     // Game state
     board: (string | null)[];
@@ -114,4 +164,4 @@ export interface LobbyState {
     
     // Derived state
     canStartGame: boolean;
-  }
+}

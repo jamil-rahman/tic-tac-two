@@ -1,4 +1,15 @@
 import { io, Socket } from 'socket.io-client';
+import { 
+  CreateRoomResponse,
+  JoinRoomResponse,
+  StartGameResponse,
+  MakeMoveResponse,
+  ForceMoveResponse,
+  PlayerJoinedData,
+  MoveMadeData,
+  PlayerDisconnectedData,
+  GetGameStateResponse
+} from '@/types';
 
 // Socket.IO client instance
 let socket: Socket | null = null;
@@ -48,15 +59,16 @@ export const disconnectSocket = (): void => {
 // Socket event types for better type safety
 export interface SocketEvents {
   // Client to Server
-  createRoom: (callback: (response: any) => void) => void;
-  joinRoom: (roomId: string, callback: (response: any) => void) => void;
-  startGame: (callback: (response: any) => void) => void;
-  makeMove: (index: number, callback: (response: any) => void) => void;
-  forceMove: (callback: (response: any) => void) => void;
+  createRoom: (callback: (response: CreateRoomResponse) => void) => void;
+  joinRoom: (roomId: string, callback: (response: JoinRoomResponse) => void) => void;
+  startGame: (callback: (response: StartGameResponse) => void) => void;
+  makeMove: (index: number, callback: (response: MakeMoveResponse) => void) => void;
+  forceMove: (callback: (response: ForceMoveResponse) => void) => void;
+  getGameState: (callback: (response: GetGameStateResponse) => void) => void;
 
   // Server to Client
-  playerJoined: (data: { player: any; roomData: any }) => void;
-  gameStarted: (data: { gameState: any; roomData: any }) => void;
-  moveMade: (data: { index: number; symbol: string; gameState: any; roomData: any; isCPUMove?: boolean }) => void;
-  playerDisconnected: (data: { playerId: string; roomData: any }) => void;
+  playerJoined: (data: PlayerJoinedData) => void;
+  gameStarted: () => void;
+  moveMade: (data: MoveMadeData) => void;
+  playerDisconnected: (data: PlayerDisconnectedData) => void;
 }

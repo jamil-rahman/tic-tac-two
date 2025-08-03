@@ -3,7 +3,16 @@
 import { useReducer, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSocket } from '@/lib/socket-client';
-import { GameState, Player, GameSocketState } from '@/types';
+import { 
+  GameState, 
+  Player, 
+  GameSocketState,
+  GetGameStateResponse,
+  MakeMoveResponse,
+  ForceMoveResponse,
+  PlayerDisconnectedData,
+  MoveMadeData
+} from '@/types';
 
 // Define action types for better type safety
 type GameAction =
@@ -11,7 +20,6 @@ type GameAction =
   | { type: 'SET_PLAYER_DATA'; payload: Player }
   | { type: 'SET_ERROR'; payload: string }
   | { type: 'RESET_GAME' };
-
 
 // Initial state
 const initialState: GameSocketState = {
@@ -116,8 +124,8 @@ export function useGameSocket() {
       hasRequestedInitialState = true;
 
       // Request initial game state when component mounts
-      socket.emit('getGameState', (response: any) => {
-        if (response.success) {
+      socket.emit('getGameState', (response: GetGameStateResponse) => {
+        if (response.success && response.gameState && response.roomData) {
           updateGameState(response.gameState);
           // Ensure player ID is correctly set from server
           const serverPlayer = response.roomData.players.find((p: Player) => p.id === socket.id);
@@ -125,17 +133,17 @@ export function useGameSocket() {
             setPlayerData(serverPlayer);
           }
         } else {
-          setError(response.error);
+          setError(response.error || 'Failed to get game state');
         }
       });
     };
 
     // Listen for subsequent move updates
-    const handleMoveMade = (data: { gameState: GameState }) => {
+    const handleMoveMade = (data: MoveMadeData) => {
       updateGameState(data.gameState);
     };
 
-    const handlePlayerDisconnected = (data: { playerId: string; roomData: any }) => {
+    const handlePlayerDisconnected = (_data: PlayerDisconnectedData) => {
       setError('Other player disconnected');
       setTimeout(() => router.push('/'), 3000);
     };
@@ -165,11 +173,11 @@ export function useGameSocket() {
       return;
     }
 
-    socket.emit('makeMove', index, (response: any) => {
-      if (response.success) {
+    socket.emit('makeMove', index, (response: MakeMoveResponse) => {
+      if (response.success && response.gameState) {
         updateGameState(response.gameState);
       } else {
-        setError(response.error);
+        setError(response.error || 'Failed to make move');
       }
     });
   }, [state.isGameActive, state.isMyTurn, state.board, state.winner, updateGameState, setError]);
@@ -178,8 +186,8 @@ export function useGameSocket() {
     const socket = getSocket();
     if (!socket) return;
 
-    socket.emit('forceMove', (response: any) => {
-      if (response.success) {
+    socket.emit('forceMove', (response: ForceMoveResponse) => {
+      if (response.success && response.gameState) {
         updateGameState(response.gameState);
       }
     });

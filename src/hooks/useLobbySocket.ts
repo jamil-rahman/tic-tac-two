@@ -3,7 +3,15 @@
 import { useReducer, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { initializeSocket, getSocket } from '@/lib/socket-client';
-import { RoomData, Player, LobbyState } from '@/types';
+import { 
+  RoomData, 
+  Player, 
+  LobbyState,
+  CreateRoomResponse,
+  JoinRoomResponse,
+  StartGameResponse,
+  PlayerJoinedData
+} from '@/types';
 
 // Define action types for better type safety
 type LobbyAction =
@@ -15,9 +23,6 @@ type LobbyAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string }
   | { type: 'GAME_STARTED' };
-
-// Combined state interface
-
 
 // Initial state
 const initialState: LobbyState = {
@@ -166,23 +171,23 @@ export function useLobbySocket() {
       
       if (storedIsHost) {
         // Host creates room
-        socket.emit('createRoom', (response: any) => {
-          if (response.success) {
+        socket.emit('createRoom', (response: CreateRoomResponse) => {
+          if (response.success && response.roomData && response.player && response.roomId) {
             setRoomCreated(response.roomData, response.player, response.roomId);
             // Update sessionStorage with actual room ID
             sessionStorage.setItem('roomId', response.roomId);
           } else {
-            setError(response.error);
+            setError(response.error || 'Failed to create room');
           }
         });
       } else {
         // Guest joins room
-        socket.emit('joinRoom', storedRoomId, (response: any) => {
-          if (response.success) {
+        socket.emit('joinRoom', storedRoomId, (response: JoinRoomResponse) => {
+          if (response.success && response.roomData && response.player) {
             setRoomJoined(response.roomData, response.player);
             updatePlayerStatus(response.roomData);
           } else {
-            setError(response.error);
+            setError(response.error || 'Failed to join room');
             setTimeout(() => router.push('/'), 2000);
           }
         });
@@ -190,12 +195,12 @@ export function useLobbySocket() {
     };
 
     // Listen for player joined events
-    const handlePlayerJoined = (data: { roomData: RoomData }) => {
+    const handlePlayerJoined = (data: PlayerJoinedData) => {
       updatePlayerStatus(data.roomData);
     };
 
     // Listen for another player disconnecting
-    const handlePlayerDisconnected = (data: { roomData: RoomData }) => {
+    const handlePlayerDisconnected = (data: PlayerJoinedData) => {
       updatePlayerStatus(data.roomData);
     };
 
@@ -232,12 +237,12 @@ export function useLobbySocket() {
     
     const socket = getSocket();
     if (socket) {
-      socket.emit('startGame', (response: any) => {
+      socket.emit('startGame', (response: StartGameResponse) => {
         if (response.success) {
           dispatch({ type: 'GAME_STARTED' });
           router.push('/game');
         } else {
-          setError(response.error);
+          setError(response.error || 'Failed to start game');
           setLoading(false);
         }
       });
