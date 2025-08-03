@@ -143,7 +143,7 @@ export function useGameSocket() {
       updateGameState(data.gameState);
     };
 
-    const handlePlayerDisconnected = (_data: PlayerDisconnectedData) => {
+    const handlePlayerDisconnected = () => {
       setError('Other player disconnected');
       setTimeout(() => router.push('/'), 3000);
     };

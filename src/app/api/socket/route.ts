@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 import { Server as SocketIOServer } from 'socket.io';
-
+import { Player, RoomData } from '@/types';
 
 // In-memory storage for rooms (will be reset on serverless function cold starts)
-const rooms = new Map();
+const rooms = new Map<string, RoomData>();
 
 // Socket.IO server instance
 let io: SocketIOServer | null = null;
@@ -28,7 +28,7 @@ function getIO() {
       socket.on('createRoom', (callback) => {
         try {
           const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-          const player: any = {
+          const player: Player = {
             id: socket.id,
             name: 'Host',
             symbol: 'X',
@@ -36,7 +36,7 @@ function getIO() {
             isConnected: true,
           };
 
-          const roomData = {
+          const roomData: RoomData = {
             id: roomId,
             players: [player],
             gameState: {
@@ -80,7 +80,7 @@ function getIO() {
             return;
           }
 
-          const player: any = {
+          const player: Player = {
             id: socket.id,
             name: 'Guest',
             symbol: room.hostSymbol === 'X' ? 'O' : 'X',
@@ -193,7 +193,7 @@ function getIO() {
         if (roomId) {
           const room = rooms.get(roomId);
           if (room) {
-            room.players = room.players.filter((p: any) => p.id !== socket.id);
+            room.players = room.players.filter((p: Player) => p.id !== socket.id);
             if (room.players.length === 0) {
               rooms.delete(roomId);
             } else {
@@ -225,8 +225,6 @@ function checkWinner(board: (string | null)[]): string | null {
 
 // API route handler
 export async function GET(req: NextRequest) {
-  const io = getIO();
-  
   // Handle Socket.IO upgrade
   if (req.headers.get('upgrade') === 'websocket') {
     // This will be handled by Socket.IO
@@ -236,7 +234,6 @@ export async function GET(req: NextRequest) {
   return new Response('Socket.IO endpoint', { status: 200 });
 }
 
-export async function POST(req: NextRequest) {
-  const io = getIO();
+export async function POST() {
   return new Response('Socket.IO endpoint', { status: 200 });
 } 
