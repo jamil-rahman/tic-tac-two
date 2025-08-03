@@ -17,13 +17,15 @@ let socket: Socket | null = null;
 // Initialize Socket.IO client
 export const initializeSocket = (): Socket => {
   if (!socket) {
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://tic-tac-two2.vercel.app';
     socket = io(serverUrl, {
+      path: '/api/socket',
       autoConnect: true,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
+      transports: ['websocket', 'polling'],
     });
 
     // Connection event handlers
