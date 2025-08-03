@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 Tic-Tac-Two
+
+A real-time multiplayer Tic-Tac-Toe game built with Next.js 15, TypeScript, and Socket.IO.
+
+## Features
+
+- Real-time multiplayer gameplay
+- Room-based matchmaking with unique codes
+- 2-second timer per move with CPU fallback
+- Modern, responsive UI with Tailwind CSS
+- Automatic win detection and game over handling
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm, yarn, or pnpm
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd tic-tac-two
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+Create a `.env.local` file in the root directory with the following variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Server Configuration
+HOSTNAME=localhost
+PORT=3000
+CLIENT_URL=http://localhost:3000
 
-## Learn More
+# Environment
+NODE_ENV=development
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `HOSTNAME` | Server hostname | `localhost` | No |
+| `PORT` | Server port | `3000` | No |
+| `CLIENT_URL` | Client URL for CORS | `http://localhost:3000` | No |
+| `NODE_ENV` | Environment mode | `development` | No |
+| `NEXT_PUBLIC_SERVER_URL` | Socket.IO server URL (client-side) | `http://localhost:3000` | No |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How to Play
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Host a Game**: Click "Host Game" to create a new room
+2. **Join a Game**: Click "Join Game" and enter the room code shared by the host
+3. **Start Playing**: The host can start the game once both players are connected
+4. **Take Turns**: Each player has 2 seconds to make a move, or the CPU will play automatically
+5. **Win**: Get three in a row to win!
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Backend**: Custom Node.js server with Socket.IO
+- **Real-time**: Socket.IO for WebSocket communication
+- **State Management**: React hooks with sessionStorage
+
+## Development
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+
+# Run linting
+npm run lint
+```
+
+## Deployment
+
+This project can be deployed to Vercel, Netlify, or any Node.js hosting platform. Make sure to:
+
+1. Set the appropriate environment variables for production
+2. Configure the `CLIENT_URL` to match your domain
+3. Ensure WebSocket connections are supported by your hosting provider
+
+## License
+
+MIT

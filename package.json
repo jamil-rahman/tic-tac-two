@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "nodemon --watch 'server.ts' --exec \"npx ts-node --project tsconfig.server.json -r tsconfig-paths/register server.ts\"",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node dist/server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -25,7 +25,10 @@
     "@types/socket.io-client": "^3.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
+    "nodemon": "^3.1.10",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   }
 }

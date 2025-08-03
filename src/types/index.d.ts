@@ -39,6 +39,7 @@ export interface RoomData {
   id: string;
   players: Player[];
   gameState: GameState;
+  hostSymbol: 'X' | 'O';
   createdAt: Date;
 }
 

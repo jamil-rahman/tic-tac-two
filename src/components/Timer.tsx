@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { TimerProps } from '@/types';
 
-export default function Timer({ duration, isActive, onTimeUp, currentPlayer }: TimerProps) {
+export default function Timer({ duration, isActive, onTimeUp }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
